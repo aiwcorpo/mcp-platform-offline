@@ -1,5 +1,7 @@
 # MCP platform, offline packages
 
+Part of [MCP Platform](https://github.com/aiwcorpo/mcp-platform), a self-hosted MCP gateway for companies. Documentation: [mcp.aiwcorpo.pl](https://mcp.aiwcorpo.pl/).
+
 Docker images of the aiwcorpo MCP platform and its MCP servers for linux/amd64 (x86_64), packed for hosts without access to
 image registries. Each package is a zip with the images (`docker save`), their checksums, load scripts for Linux (`bash`) and
 Windows (PowerShell) and the Compose files to start them. Download them from
