@@ -56,7 +56,7 @@ prepare_stage "$NAME"
 BUNDLE="$STAGE/mcp-platform"
 export_tree mcp-platform "$SHA" "$BUNDLE"
 # What a person running the platform does not need. LICENSE and NOTICE stay: the package redistributes Apache-2.0 software.
-(cd "$BUNDLE" && rm -rf .github AGENTS.md CLAUDE.md SECURITY.md)
+(cd "$BUNDLE" && rm -rf .github AGENTS.md CLAUDE.md SECURITY.md CONTRIBUTING.md scripts)
 if [ -f "$BUNDLE/compose.offline.yaml" ]; then
   say "compose.offline.yaml: from mcp-platform $REF"
 else
