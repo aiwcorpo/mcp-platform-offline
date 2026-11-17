@@ -20,6 +20,12 @@ Each zip has a `README.md` with the steps: check and load the images, then insta
 
 With registry access the same images are on `ghcr.io/aiwcorpo` and need no package.
 
+## Building the packages
+
+`scripts/build-platform-package.sh` and `scripts/build-servers-package.sh` build the zips from the component repositories
+(`mcp-platform`, `mcp-server-*`) and `docker pull`/`docker save`; `scripts/release-sums.sh` writes `SHA256SUMS`. Options, the
+`--dry-run` check and the steps that need a person are in `AGENTS.md`.
+
 ## Licenses
 
 The aiwcorpo images are under the Apache License 2.0 (`LICENSE`). The third-party images in the platform package are the
