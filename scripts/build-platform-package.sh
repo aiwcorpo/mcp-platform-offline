@@ -57,7 +57,12 @@ BUNDLE="$STAGE/mcp-platform"
 export_tree mcp-platform "$SHA" "$BUNDLE"
 # What a person running the platform does not need. LICENSE and NOTICE stay: the package redistributes Apache-2.0 software.
 (cd "$BUNDLE" && rm -rf .github AGENTS.md CLAUDE.md SECURITY.md)
-cp "$ROOT/templates/platform/compose.offline.yaml" "$BUNDLE/compose.offline.yaml"
+if [ -f "$BUNDLE/compose.offline.yaml" ]; then
+  say "compose.offline.yaml: from mcp-platform $REF"
+else
+  cp "$ROOT/templates/platform/compose.offline.yaml" "$BUNDLE/compose.offline.yaml"
+  say "note  mcp-platform $REF has no compose.offline.yaml: using templates/platform/compose.offline.yaml"
+fi
 
 LIST="$STAGE/.images"
 if [ -n "$IMAGES_FILE" ]; then
@@ -73,7 +78,7 @@ strip_digest < "$LIST" > "$STAGE/.compose"
 compose_images "$BUNDLE" compose.yaml compose.offline.yaml | LC_ALL=C sort -u > "$STAGE/.offline"
 if [ -z "$IMAGES_FILE" ] && ! diff "$STAGE/.compose" "$STAGE/.offline" >/dev/null; then
   diff "$STAGE/.compose" "$STAGE/.offline" >&2 || true
-  die "templates/platform/compose.offline.yaml does not match compose.yaml at $REF (lines marked < are only in compose.yaml)"
+  die "compose.offline.yaml does not match compose.yaml at $REF (lines marked < are only in compose.yaml)"
 fi
 say "images: $(wc -l < "$LIST" | tr -d ' ')"
 

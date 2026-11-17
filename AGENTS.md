@@ -20,7 +20,7 @@ the zips. Inside each zip, under `<package>-<version>-offline/`:
 - Platform zip: `mcp-platform/`, the Compose bundle plus `compose.offline.yaml`. Servers zip: `servers/mcp-server-<system>/`,
   the `deploy/` directory of each server.
 
-`compose.offline.yaml` lives in `templates/platform/` (it is not in the mcp-platform repository) and names the third-party images by tag because Docker Engine with the classic image store drops the registry
+`compose.offline.yaml` comes from the mcp-platform ref (`templates/platform/compose.offline.yaml` is the fallback for older refs that lack it) and names the third-party images by tag because Docker Engine with the classic image store drops the registry
 digest on `docker load`, and `compose.yaml` pins them by digest. Installs set `PULL_POLICY=never`. Keep both points in any README
 or package change; the user docs in `mcp-docs` (`admin/install/offline.md`) describe the same steps.
 
@@ -37,14 +37,14 @@ scripts/release-sums.sh               # SHA256SUMS of the zips in dist/
 Output goes to `dist/` (ignored by git). The image list is read from `compose.yaml` of the bundle (platform) and from
 `deploy/compose.yaml` of each server, with variable defaults resolved by `docker compose config --images`. Files come from
 `git archive` of the given ref after `git fetch`, never from a working tree. The platform script refuses to run when
-`templates/platform/compose.offline.yaml` and `compose.yaml` name different images.
+`compose.offline.yaml` and `compose.yaml` name different images.
 
 - `--dry-run` builds everything except pulling and saving images: tree, README, image list, no zip. Use it to check a ref.
 - `--local` takes the images from the local Docker for versions that are not published yet. Not for a release: the third-party
   images are then not the pinned digests.
 - `--images-file FILE` replaces the image list, for a quick real run with one small image.
 - Digest-pinned third-party images are pulled by digest and tagged `name:tag` in the local Docker before `docker save`, which
-  moves a local tag of that name to the pinned digest.
+  moves a local tag of that name to the pinned digest; the script prints each tag it moves.
 - `--checked-on DATE` (platform) writes the "Checked on" line of the README. Pass it only after the package was loaded into a
   clean Docker Engine and the platform started from it; the scripts cannot check that.
 

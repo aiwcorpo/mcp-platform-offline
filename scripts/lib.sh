@@ -83,7 +83,7 @@ read_images_file() {
 # save_images <list file> <images dir>: the list holds one reference per line, digest included where compose.yaml pins one.
 # The tar carries the tag only (compose.offline.yaml names the images by tag), so a digest pull is tagged before saving.
 save_images() {
-  local ref tagref file os_arch
+  local ref tagref file os_arch old new
   while IFS= read -r ref; do
     tagref=${ref%%@*}
     file=$(image_file "$ref")
@@ -96,7 +96,12 @@ save_images() {
     else
       say "pull  $ref"
       docker pull -q --platform "$PLATFORM" "$ref" >/dev/null || die "pull failed: $ref"
-      [ "$ref" = "$tagref" ] || docker tag "$ref" "$tagref"
+      if [ "$ref" != "$tagref" ]; then
+        old=$(docker image inspect --format '{{.Id}}' "$tagref" 2>/dev/null || true)
+        new=$(docker image inspect --format '{{.Id}}' "$ref")
+        [ -z "$old" ] || [ "$old" = "$new" ] || say "retag $tagref moves from $old to $new"
+        docker tag "$ref" "$tagref"
+      fi
     fi
     # The containerd image store keeps every platform of a tag; without --platform inspect reports the host's.
     os_arch=$(docker image inspect --platform "$PLATFORM" --format '{{.Os}}/{{.Architecture}}' "$tagref" 2>/dev/null) ||
