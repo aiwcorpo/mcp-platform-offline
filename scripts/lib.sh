@@ -159,9 +159,10 @@ prepare_stage() {
   mkdir -p "$STAGE/images"
 }
 
-# make_zip <name>: stored, not deflated, as the images are compressed already.
+# make_zip <name>: deflated. The classic image store saves layers uncompressed, and GitHub refuses release assets of 2 GiB or
+# more; layers that are compressed already cost only the time of a deflate pass.
 make_zip() {
-  (cd "$OUT" && zip -qr -X -0 "$1.zip" "$1")
+  (cd "$OUT" && zip -qr -X -6 "$1.zip" "$1")
 }
 
 finish() {
